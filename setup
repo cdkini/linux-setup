@@ -1,7 +1,71 @@
 #!/usr/bin/env bash
 
-git config --global user.name "Chetan Kini"
-git config --global user.email ckini123@gmail.com
-git config --global commit.template ~/.git-commit-template.txt
-git config --global commit.cleanup strip
-git config --global core.editor nvim
+create_backups_dir() {
+    if test -d "backups"; then
+        printf "%s\n" "'backups/' already exists; skipping mkdir"
+    else
+        mkdir "backups"
+        printf "%s\n" "Created 'backups/'"
+    fi
+}
+
+clone_repos() {
+    failure=false
+
+    git clone "https://github.com/cdkini/dotfiles.git"
+    if [[ $? -eq 0 ]]; then
+        printf "%s\n" "Successfully cloned dotfiles"
+    else
+        printf "%s\n" "Failed to download dotfiles"
+        failure=true
+    fi
+
+    git clone "https://github.com/cdkini/nvim.git"
+    if [[ $? -eq 0 ]]; then
+        printf "%s\n" "Successfully cloned nvim config"
+    else
+        printf "%s\n" "Failed to download nvim config"
+        failure=true
+    fi
+
+    if [[ $failure = true ]]; then
+        printf "\n%s\n\n" "ERROR: One or more repositories was not installed properly"
+    else
+        printf "\n%s\n\n" "SUCCESS: All repositories were installed successfully"
+    fi
+}
+
+config_git() {
+    printf "%s\n" "Git:"
+    printf "%s\n" "--------"
+
+    git config --global user.name "Chetan Kini"
+    printf "%s\n" "Set 'user.name' to 'Chetan Kini'"
+    git config --global user.email ckini123@gmail.com
+    printf "%s\n" "Set 'user.email' to 'ckini123@gmail.com'"
+    git config --global core.editor nvim
+    printf "%s\n" "Set 'core.editor' to 'nvim'"
+
+    if test -f "$HOME/.git-commit-template.txt"; then
+        cp "$HOME/.git-commit-template.txt" "backups/"
+        printf "%s\n" "Saved existing copy of '~/.git-commit-template.txt' in 'backups/'"
+    fi
+
+    cp ".git-commit-template.txt" ~
+    printf "%s\n" "Copied '.git-commit-template.txt' to ~"
+    git config --global commit.template "$HOME/.git-commit-template.txt"
+    printf "%s\n" "Set 'commit.template' to '.git-commit-template.txt'"
+    git config --global commit.cleanup strip
+    printf "%s\n\n" "Set 'commit.cleanup' to 'strip' (no empty commits allowed)"
+}
+
+main() {
+    printf "%s\n" "setup - $(date)"
+    printf "%s\n" "============================================================"
+    create_backups_dir
+    clone_repos
+    config_git
+    printf "%s\n" "============================================================"
+}
+
+main "$@" 2>&1 | tee -a log.txt # Logs both STDOUT and STDERR
