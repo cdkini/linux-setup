@@ -39,6 +39,12 @@ install_bat() {
     fi
 }
 
+install_tree() {
+    if ! command -v tree; then
+        apt-get install tree
+    fi
+}
+
 install_fd() {
     if ! command -v fdfind; then
         apt-get install fd-find # Aliased to 'fd' in .bashrc
@@ -73,6 +79,7 @@ install_dependencies() {
         install_node
         install_rg
         install_bat
+        install_tree
         install_fd
         install_fzf
         install_nvim
