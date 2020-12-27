@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
+# This file is responsible for downloading all dependencies necessary to run my set-up of Bash and Neovim in Ubuntu.
 
+# Both apt-get and snap require root privledges
 check_su() {
     if [[ $(id -u) != "0" ]]; then
         printf "%s\n\n" "You must be the superuser to run this script (try 'sudo -s')"
@@ -25,40 +27,41 @@ install_node() {
     if ! [[ -x "$(command -v node)" ]]; then
         return
     fi
-        snap install node --classic --channel=edge
+        snap install node --classic --channel=edge # Installs both node and npm
 }
 
 install_rg() {
     if ! [[ -x "$(command -v rg)" ]]; then
         return
     fi
-        curl -LO https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep_12.1.1_amd64.deb &> /dev/null
+        curl -LO https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep_12.1.1_amd64.deb
         dpkg -i ripgrep_12.1.1_amd64.deb
+        rm ripgrep_12.1.1_amd64.deb # This method of installation leaves behind a .deb
 }
 
 install_bat() {
     if ! [[ -x "$(command -v batcat)" ]]; then
         return
     fi
-        snap install batcat 
+        snap install batcat # Aliased to 'bat' in .bashrc
 }
 
 install_fd() {
     if ! [[ -x "$(command -v fdfind)" ]]; then
         return
     fi
-        apt-get install fd-find &> /dev/null
+        apt-get install fd-find # Aliased to 'fd' in .bashrc
 }
 
 install_fzf() {
     if ! [[ -x "$(command -v fzf)" ]]; then
         return
     fi
-        apt-get install fzf &> /dev/null
+        apt-get install fzf
 }
 
 install_dependencies() {
-    apt-get update &> /dev/null
+    apt-get update
     printf "%s\n\n" "Updated 'apt-get' to most recent version"
 
     printf "%s\n\n" "Downloading dependencies..."
@@ -74,11 +77,11 @@ install_dependencies() {
 
     failure=false
     for cmd in "${dependencies[@]}"; do
-        $cmd &> /dev/null
+        $cmd
         if [[ $? -eq 0 ]]; then
-            printf "%s\n" "Successfully ran '$cmd'"
+            printf "%s\n\n" "Successfully ran '$cmd'"
         else
-            printf "%s\n" "Failed to run '$cmd'"
+            printf "%s\n\n" "Failed to run '$cmd'"
             failure=true
         fi
     done
@@ -95,7 +98,7 @@ main() {
     printf "%s\n" "============================================================"
     check_su
     install_dependencies
-    printf "%s\n" "------------------------------------------------------------"
+    printf "%s\n" "============================================================"
 }
 
-main "$@" 2>&1 | tee -a log.txt
+main "$@" 2>&1 | tee -a log.txt # Logs both STDOUT and STDERR
