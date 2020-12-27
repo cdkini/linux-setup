@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+git config --global user.name "Chetan Kini"
+git config --global user.email ckini123@gmail.com
+git config --global commit.template ~/.git-commit-template.txt
+git config --global commit.cleanup strip
+git config --global core.editor nvim

@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+
+check_su() {
+    if [[ $(id -u) != "0" ]]; then
+        printf "%s\n\n" "You must be the superuser to run this script (try 'sudo -s')"
+        exit -1
+    fi
+}
+
+install_git() {
+    if ! [[ -x "$(command -v git)" ]]; then
+        return
+    fi
+        apt-get install git 
+}
+
+install_curl() {
+    if ! [[ -x "$(command -v curl)" ]]; then
+        return
+    fi
+        apt-get install curl 
+}
+
+install_node() {
+    if ! [[ -x "$(command -v node)" ]]; then
+        return
+    fi
+        snap install node --classic --channel=edge
+}
+
+install_rg() {
+    if ! [[ -x "$(command -v rg)" ]]; then
+        return
+    fi
+        curl -LO https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep_12.1.1_amd64.deb &> /dev/null
+        dpkg -i ripgrep_12.1.1_amd64.deb
+}
+
+install_bat() {
+    if ! [[ -x "$(command -v batcat)" ]]; then
+        return
+    fi
+        snap install batcat 
+}
+
+install_fd() {
+    if ! [[ -x "$(command -v fdfind)" ]]; then
+        return
+    fi
+        apt-get install fd-find &> /dev/null
+}
+
+install_fzf() {
+    if ! [[ -x "$(command -v fzf)" ]]; then
+        return
+    fi
+        apt-get install fzf &> /dev/null
+}
+
+install_dependencies() {
+    apt-get update &> /dev/null
+    printf "%s\n\n" "Updated 'apt-get' to most recent version"
+
+    printf "%s\n\n" "Downloading dependencies..."
+    declare -a dependencies=(
+        install_git
+        install_curl
+        install_node
+        install_rg
+        install_bat
+        install_fd
+        install_fzf
+    )
+
+    failure=false
+    for cmd in "${dependencies[@]}"; do
+        $cmd &> /dev/null
+        if [[ $? -eq 0 ]]; then
+            printf "%s\n" "Successfully ran '$cmd'"
+        else
+            printf "%s\n" "Failed to run '$cmd'"
+            failure=true
+        fi
+    done
+
+    if [[ $failure = true ]]; then
+        printf "\n%s\n" "ERROR: One or more dependencies was not installed properly"
+    else
+        printf "\n%s\n" "SUCCESS: All dependencies were installed successfully"
+    fi
+}
+
+main() {
+    printf "%s\n" "dependencies - $(date)"
+    printf "%s\n" "============================================================"
+    check_su
+    install_dependencies
+    printf "%s\n" "------------------------------------------------------------"
+}
+
+main "$@" 2>&1 | tee -a log.txt
