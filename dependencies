@@ -10,61 +10,51 @@ check_su() {
 }
 
 install_git() {
-    if ! [[ -x "$(command -v git)" ]]; then
-        return
+    if ! command -v git; then
+        apt-get install git
     fi
-        apt-get install git 
 }
 
 install_curl() {
-    if ! [[ -x "$(command -v curl)" ]]; then
-        return
-    fi
+    if ! command -v curl; then
         apt-get install curl 
+    fi
 }
 
 install_node() {
-    if ! [[ -x "$(command -v node)" ]]; then
-        return
-    fi
+    if ! command -v node; then
         snap install node --classic --channel=edge # Installs both node and npm
+    fi
 }
 
 install_rg() {
-    if ! [[ -x "$(command -v rg)" ]]; then
-        return
+    if ! command -v rg; then
+        snap install ripgrep --classic 
     fi
-        curl -LO https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep_12.1.1_amd64.deb
-        dpkg -i ripgrep_12.1.1_amd64.deb
-        rm ripgrep_12.1.1_amd64.deb # This method of installation leaves behind a .deb
 }
 
 install_bat() {
-    if ! [[ -x "$(command -v batcat)" ]]; then
-        return
-    fi
+    if ! command -v batcat; then
         snap install batcat # Aliased to 'bat' in .bashrc
+    fi
 }
 
 install_fd() {
-    if ! [[ -x "$(command -v fdfind)" ]]; then
-        return
-    fi
+    if ! command -v fdfind; then
         apt-get install fd-find # Aliased to 'fd' in .bashrc
+    fi
 }
 
 install_fzf() {
-    if ! [[ -x "$(command -v fzf)" ]]; then
-        return
-    fi
+    if ! command -v fzf; then
         apt-get install fzf
+    fi
 }
 
 install_nvim() {
-    if ! [[ -x "$(command -v nvim)" ]]; then
-        return
-    fi
+    if ! command -v nvim; then
         apt-get install neovim
+    fi
 }
 
 install_vimplug() {
