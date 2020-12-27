@@ -40,23 +40,50 @@ config_git() {
     printf "%s\n" "--------"
 
     git config --global user.name "Chetan Kini"
-    printf "%s\n" "Set 'user.name' to 'Chetan Kini'"
-    git config --global user.email ckini123@gmail.com
-    printf "%s\n" "Set 'user.email' to 'ckini123@gmail.com'"
-    git config --global core.editor nvim
-    printf "%s\n" "Set 'core.editor' to 'nvim'"
+    git config --global user.email "ckini123@gmail.com"
+    git config --global core.editor "nvim"
+    printf "%s\n" "Set 'user.name' => 'Chetan Kini', 'user.email' => 'ckini123@gmail.com', and 'core.editor' => 'nvim'"
 
     if test -f "$HOME/.git-commit-template.txt"; then
-        cp "$HOME/.git-commit-template.txt" "backups/"
-        printf "%s\n" "Saved existing copy of '~/.git-commit-template.txt' in 'backups/'"
+        cp -f "$HOME/.git-commit-template.txt" "backups/"
+        printf "%s\n" "Saved existing copy of '~/.git-commit-template.txt' to 'backups/'"
     fi
 
-    cp ".git-commit-template.txt" ~
+    cp -f ".git-commit-template.txt" $HOME
     printf "%s\n" "Copied '.git-commit-template.txt' to ~"
     git config --global commit.template "$HOME/.git-commit-template.txt"
-    printf "%s\n" "Set 'commit.template' to '.git-commit-template.txt'"
     git config --global commit.cleanup strip
-    printf "%s\n\n" "Set 'commit.cleanup' to 'strip' (no empty commits allowed)"
+    printf "%s\n\n" "Set 'commit.template' => '.git-commit-template.txt' and 'commit.cleanup' => 'strip' (no empty commits allowed)"
+}
+
+config_dotfiles() {
+    printf "%s\n" "Dotfiles:"
+    printf "%s\n" "--------"
+
+    if test -f "$HOME/.bashrc"; then
+        cp -f "$HOME/.bashrc" "backups/"
+        printf "%s\n" "Saved existing copy of '~/.bashrc' to 'backups/'"
+    fi
+
+    cp -f "dotfiles/.bashrc" $HOME
+    printf "%s\n" "Copied 'dotfiles/.bashrc' to ~"
+    source "$HOME/.bashrc"
+    printf "%s\n\n" "Sourced updated '.bashrc'"
+}
+
+config_nvim() {
+    printf "%s\n" "Neovim:"
+    printf "%s\n" "--------"
+
+    if test -d "$HOME/.config/nvim"; then
+        cp -fr "$HOME/.config/nvim" "backups/"
+        printf "%s\n" "Saved existing copy of '~/.config/nvim' to 'backups/'"
+    fi
+
+    cp -fr "nvim" "$HOME/.config/nvim"
+    printf "%s\n\n" "Copied 'nvim/' to ~/.config"
+
+    # Open to include vim-plug configuration
 }
 
 main() {
@@ -65,6 +92,8 @@ main() {
     create_backups_dir
     clone_repos
     config_git
+    config_dotfiles
+    config_nvim
     printf "%s\n" "============================================================"
 }
 
